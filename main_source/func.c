@@ -10,6 +10,7 @@
 #include "main.h"
 
 extern int snake_life;
+int LIFE=2;
 extern uint8_t map[MAP_ROW][MAP_COL];
 char input;
 /* gen number [MOVING_LEFT-MOVING_DOWN]*/
@@ -18,7 +19,8 @@ char snake_direction=0;
 /*init head snake*/
 int snake_eat_food = 0;
 struct snake *snake_head = NULL;
-struct location_food *snake_food = NULL;
+
+struct location_food snake_food={};
 
 static int count=0;
 
@@ -39,11 +41,14 @@ void create_new_snake(void)
     /*init moving direction of snake*/ 
     //srand(time(0));
     //snake_direction=(rand() % 4);
-    snake_direction=MOVING_RIGHT;
-    snake_head=add_node_snake(snake_head, 7, 7);
-    snake_head=add_node_snake(snake_head, 7, 8);
-    map[7][7]=SNAKE_BLOCK;
-    map[7][8]=SNAKE_BLOCK;
+    snake_food.row=15;
+    snake_food.col=25;
+    map[snake_food.row][snake_food.col] = EAT_BLOCK;
+    snake_direction = MOVING_RIGHT;
+    snake_head = add_node_snake(snake_head, 7, 7);
+    snake_head = add_node_snake(snake_head, 7, 8);
+    map[7][7] = SNAKE_BLOCK;
+    map[7][8] = SNAKE_BLOCK;
 }
 
 void init_map(void)
@@ -55,15 +60,13 @@ void init_map(void)
         for(j=0;j<=MAP_COL;j++)
         {
             if(i>0&&i<MAP_ROW&&j>0&&j<MAP_COL) 
-                map[i][j]=EMPTY_BLOCK; 
+                map[i][j] = EMPTY_BLOCK; 
             else 
-                map[i][j]=WALL_BLOCK;
+                map[i][j] = WALL_BLOCK;
         }
     }
     /* create snake node*/
     create_new_snake();
-    /* gen ramdum food on sreen*/
-    gen_food_ramdum();
 }
 void display_map(void)
 {
@@ -89,7 +92,7 @@ void display_map(void)
         }
         printf("\n");
     }
-    printf("time:%d|| snake_dir:%d\n",++count,snake_direction);
+    printf("time:%d|| life:%d\n",++count,LIFE);
     
 }
 void snake_run(char snake_direction)
@@ -138,57 +141,57 @@ void control_snake_run(void)
     tcsetattr(0, TCSANOW, &info);
 }
 
-struct location_food *gen_randum_number(int row_min, int row_max, int col_min, int col_max)
+void gen_randum_number(int row_min, int row_max, int col_min, int col_max)
 {
-    struct location_food *food=(struct location_food *)malloc(sizeof(struct location_food));
     srand(time(0));
-    food->row= row_min + (rand() % (row_max-row_min));
-    food->col= col_min + (rand() % (col_max-col_min));
-    return food;
+    snake_food.row= row_min + (rand() % (row_max-row_min));
+    snake_food.col= col_min + (rand() % (col_max-col_min));
 }
 
-struct location_food *check_snake_gen_food(struct location_food *snake_food, int limit)
+void check_snake_gen_food(int limit)
 {
-    struct location_food *food;
     int i=0;
-    for(i=(food->row-limit) ;i<(food->row+limit); i++)
+    snake_food.check=0;
+    for(i=(snake_food.row-limit) ;i<(snake_food.row+limit); i++)
     {
-        if(map[food->row][food->col]==SNAKE_BLOCK)
-            return NULL;
+        if(map[i][snake_food.col]==SNAKE_BLOCK)
+        {
+            snake_food.check=1;
+            //return food;
+        }     
     }
 
-    for(i=(food->col-limit) ;i<(food->col+limit); i++)
+    for(i=(snake_food.col-limit) ;i<(snake_food.col+limit); i++)
     {
-        if(map[food->col][food->col]==SNAKE_BLOCK)
-            return NULL;
+        if(map[snake_food.row][i]==SNAKE_BLOCK)
+        {
+            snake_food.check=1;
+            //return food;
+        }    
     }
-    return food;
+    //return food;
 }
 
 void gen_food_ramdum(void)
 {
-    //struct location_food *snake_food=(struct location_food *)malloc(sizeof(struct location_food));
-    
-    snake_food=gen_randum_number(1, MAP_ROW, 1, MAP_COL);
+    gen_randum_number(1, MAP_ROW, 1, MAP_COL);
     while(1)
     {
-        snake_food=gen_randum_number(1, MAP_ROW, 1, MAP_COL);
-        snake_food=check_snake_gen_food(snake_food, 4);
-        if(NULL != snake_food) break;
+        gen_randum_number(1, MAP_ROW, 1, MAP_COL);
+        check_snake_gen_food(5);
+        if(1 != snake_food.check) break;
     }
-    map[snake_food->row][snake_food->col]=EAT_BLOCK;
+    map[snake_food.row][snake_food.col]=EAT_BLOCK;
 
 }
 
 void food_appear_randum(void)
 {
-    if(map[snake_food->row][snake_food->col] == SNAKE_BLOCK)
+    if(map[snake_food.row][snake_food.col] == SNAKE_BLOCK)
     {
         snake_eat_food=SNAKE_EAT;
         gen_food_ramdum();
     }
-    //printf("head = x: %d || y: %d\n",snake_head->x,snake_head->y);
-    //printf("location = x: %d || y: %d\n",snake_food->row,snake_food->col);
 }
 
 
