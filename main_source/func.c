@@ -16,7 +16,9 @@ char input;
 char snake_direction=0;
 
 /*init head snake*/
+int snake_eat_food = 0;
 struct snake *snake_head = NULL;
+struct location_food *snake_food = NULL;
 
 static int count=0;
 
@@ -58,7 +60,10 @@ void init_map(void)
                 map[i][j]=WALL_BLOCK;
         }
     }
+    /* create snake node*/
     create_new_snake();
+    /* gen ramdum food on sreen*/
+    gen_food_ramdum();
 }
 void display_map(void)
 {
@@ -135,8 +140,7 @@ void control_snake_run(void)
 
 struct location_food *gen_randum_number(int row_min, int row_max, int col_min, int col_max)
 {
-    struct location_food *food;
-
+    struct location_food *food=(struct location_food *)malloc(sizeof(struct location_food));
     srand(time(0));
     food->row= row_min + (rand() % (row_max-row_min));
     food->col= col_min + (rand() % (col_max-col_min));
@@ -161,26 +165,30 @@ struct location_food *check_snake_gen_food(struct location_food *snake_food, int
     return food;
 }
 
-struct location_food * gen_food_ramdum(void)
+void gen_food_ramdum(void)
 {
-    struct location_food *snake_food=(struct location_food *)malloc(sizeof(struct location_food));
+    //struct location_food *snake_food=(struct location_food *)malloc(sizeof(struct location_food));
     
-    snake_food=gen_randum_number(10, MAP_ROW, 10, MAP_COL);
+    snake_food=gen_randum_number(1, MAP_ROW, 1, MAP_COL);
     while(1)
     {
-        snake_food=gen_randum_number(10, MAP_ROW, 10, MAP_COL);
+        snake_food=gen_randum_number(1, MAP_ROW, 1, MAP_COL);
         snake_food=check_snake_gen_food(snake_food, 4);
         if(NULL != snake_food) break;
     }
-    printf("location = x: %d || y: %d\n",snake_food->row,snake_food->col);
     map[snake_food->row][snake_food->col]=EAT_BLOCK;
 
-    return snake_food;
 }
 
 void food_appear_randum(void)
 {
-    
+    if(map[snake_food->row][snake_food->col] == SNAKE_BLOCK)
+    {
+        snake_eat_food=SNAKE_EAT;
+        gen_food_ramdum();
+    }
+    //printf("head = x: %d || y: %d\n",snake_head->x,snake_head->y);
+    //printf("location = x: %d || y: %d\n",snake_food->row,snake_food->col);
 }
 
 

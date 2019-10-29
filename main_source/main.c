@@ -16,7 +16,7 @@ void *display(void *arg)
 	pthread_mutex_lock(&mutex);
 	display_map();
 	pthread_mutex_unlock(&mutex);
-	usleep(100000);
+	//usleep(3000);
 	return NULL;
 }
 
@@ -25,8 +25,7 @@ void *control(void *arg)
 	pthread_mutex_lock(&mutex);
     control_snake_run();
 	pthread_mutex_unlock(&mutex);
-	// speed snake
-	usleep(50000);
+	usleep(80000);
 	return NULL;
 }
 
@@ -35,6 +34,7 @@ void *food_randum(void *arg)
 	pthread_mutex_lock(&mutex);
     food_appear_randum();
 	pthread_mutex_unlock(&mutex);
+	usleep(1000);
 	return NULL;
 }
 

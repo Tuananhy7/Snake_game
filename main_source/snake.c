@@ -5,6 +5,7 @@
 #include "main.h"
 
 extern uint8_t map[MAP_ROW][MAP_COL];
+extern int snake_eat_food;
 
 
 struct snake *node_snake_create(int x, int y)
@@ -44,7 +45,11 @@ struct snake *appear_snake(struct snake *head, char move_type)
         head->x--;
     else if(MOVING_DOWN==move_type)
         head->x++;
-    
+    if(snake_eat_food == SNAKE_EAT)
+    {
+        head=add_node_snake(head, head->x, head->y);
+        snake_eat_food = SNAKE_RUN;
+    }
     return head;
 }
 

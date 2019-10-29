@@ -11,7 +11,9 @@ enum wall_snake_empty_eat
 enum snake_status
 {
     LIVE_SNAKE,
-    DIE_SNAKE
+    DIE_SNAKE,
+    SNAKE_EAT,
+    SNAKE_RUN
 };
 
 struct snake
