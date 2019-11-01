@@ -13,3 +13,4 @@ snake.o: snake.c main.h
 
 clean:
 	$(RM) run_one *.o
+	echo clear clear
